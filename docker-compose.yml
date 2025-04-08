@@ -1,0 +1,52 @@
+services:
+  # The Node.js Application
+  app:
+    container_name: "${APP_NAME}_app"
+    platform: linux/x86_64
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    working_dir: /app
+    restart: always
+    volumes:
+      - ./server:/app
+    networks:
+      - sail
+
+  # The Web Server (Optional)
+  # web:
+  #   container_name: "${APP_NAME}_web"
+  #   build:
+  #     context: ./docker/web/
+  #     dockerfile: web.dockerfile
+  #   working_dir: /app
+  #   restart: always
+  #   volumes:
+  #     - ./public:/app/public
+  #   ports:
+  #     - 8089:80
+  #   networks:
+  #     - sail
+
+  # The Database (MySQL)
+  database:
+    container_name: "${APP_NAME}_database"
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_USER: ${DB_USERNAME}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      TZ: "Asia/Tokyo"
+    ports:
+      - "3309:3306" # Map port 3309 của máy vào MySQL trong container
+    volumes:
+      - dbdata:/var/lib/mysql # Dữ liệu MySQL sẽ được lưu trong volume
+    networks:
+      - sail
+
+networks:
+  sail:
+
+volumes:
+  dbdata:
