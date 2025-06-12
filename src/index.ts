@@ -1,23 +1,23 @@
 import express from "express";
-import { sequelize } from "./database";
-import { User } from "./models/user.model";
+import dotenv from "dotenv";
+import "@/models";
+import sequelize from "./database";
+import userService from "@/services/userService";
+
+dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use("/users", userService);
 
-app.get("/", async (_, res) => {
-  await sequelize.sync();
-  const users = await User.findAll();
-  res.json(users);
-});
-
-app.post("/users", async (req, res) => {
-  const user = await User.create({ username: req.body.username });
-  res.json(user);
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+app.listen(PORT, async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("DB connected", PORT);
+  } catch (error) {
+    console.error("DB connection failed:", error);
+  }
+  console.log(`Server running on http://localhost:${PORT}`);
 });
