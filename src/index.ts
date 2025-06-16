@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import "@/models";
 import sequelize from "./database";
-import userService from "@/services/userService";
+import apiRoutes from "@/routes";
 
 dotenv.config();
 
@@ -10,7 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use("/users", userService);
+app.use("/api/v1", apiRoutes);
 
 app.listen(PORT, async () => {
   try {

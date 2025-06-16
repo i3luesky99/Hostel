@@ -7,17 +7,19 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "dev": "ts-node-dev --respawn -r tsconfig-paths/register src/index.ts",
-    "migrate": "ts-node src/migrate.ts",
-    "migrate:down": "ts-node src/migrate.ts down",
-    "seed": "ts-node src/seed.ts",
-    "seed:down": "ts-node src/seed.ts down"
+    "migrate": "ts-node -r tsconfig-paths/register src/migrate.ts",
+    "migrate:down": "ts-node -r tsconfig-paths/register src/migrate.ts down",
+    "seed": "ts-node -r tsconfig-paths/register src/seed.ts",
+    "seed:down": "ts-node -r tsconfig-paths/register src/seed.ts down"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.14.0",
     "sequelize": "^6.37.7",
     "tsconfig-paths": "^4.2.0"

@@ -10,6 +10,10 @@ export async function up(queryInterface: QueryInterface): Promise<void> {
     phone: { type: DataTypes.STRING, allowNull: true },
     image: { type: DataTypes.BLOB("long"), allowNull: true },
     role: { type: DataTypes.TINYINT, allowNull: false, defaultValue: 1 }, // 0: ADMIN, 1: USER
+    refresh_token: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
     created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
     updated_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
   });

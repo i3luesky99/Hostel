@@ -26,6 +26,9 @@ User.init(
     password: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        len: { args: [8, 10], msg: "Password must be between 8 and 10 characters long" },
+      },
     },
     phone: {
       type: DataTypes.STRING,
@@ -38,7 +41,14 @@ User.init(
     role: {
       type: DataTypes.TINYINT,
       allowNull: false,
+      validate: {
+        isIn: [[USER_ROLES.ADMIN, USER_ROLES.USER]],
+      },
       defaultValue: USER_ROLES.USER, // 0: ADMIN, 1: USER
+    },
+    refresh_token: {
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
   },
   {
