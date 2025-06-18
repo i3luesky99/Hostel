@@ -2,9 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { User } from "@/models/User/User";
-
-const JWT_SECRET = process.env.JWT_SECRET || "access_secret";
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "refresh_secret";
+import { JWT_SECRET, JWT_REFRESH_SECRET } from '@/config';
 
 const generateAccessToken = (payload: object) => {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: "15m" });
@@ -32,7 +30,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
 
     await user.update({ refresh_token: refreshToken });
 
-    return res.json({ accessToken, refreshToken, user });
+    return res.json({ accessToken, refreshToken, user: { id: dataValues.id, username: dataValues.username, role: dataValues.role } });
 
   } catch (err) {
     return res.status(500).json({ message: "Login failed", error: err });

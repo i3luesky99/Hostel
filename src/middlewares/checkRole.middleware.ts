@@ -1,6 +1,7 @@
+import { UserRole } from '@/models/User/User';
 import { Request, Response, NextFunction } from 'express';
 
-export const checkRole = (roles: string[]) => {
+export const checkRole = (roles: UserRole[]) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.user) {
       res.status(401).json({ message: 'Unauthorized' });

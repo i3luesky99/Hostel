@@ -1,6 +1,6 @@
+import { JWT_SECRET } from '@/config';
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../config';
 
 // Extend Express Request interface to include user property
 declare global {
@@ -35,7 +35,7 @@ export const authMiddleware = (
     next();
   } catch (error) {
     if (error instanceof jwt.JsonWebTokenError) {
-      res.status(401).json({ message: 'Invalid token' });
+      res.status(401).json({ error: error, message: 'Invalid token' });
       return;
     }
     if (error instanceof jwt.TokenExpiredError) {

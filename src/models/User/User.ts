@@ -8,6 +8,7 @@ export const USER_ROLES = {
   USER: 1,
 } as const;
 
+export type UserRole = typeof USER_ROLES[keyof typeof USER_ROLES];
 User.init(
   {
     id: {
