@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "@/database";
+
 export class User extends Model { }
 
 export const USER_ROLES = {
@@ -27,7 +28,7 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        len: { args: [8, 10], msg: "Password must be between 8 and 10 characters long" },
+        len: { args: [8, 125], msg: "Password must be between 8 and 125 characters long" },
       },
     },
     phone: {
