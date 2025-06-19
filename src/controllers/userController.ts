@@ -4,16 +4,17 @@ import bcrypt from "bcryptjs";
 import { config } from "@/config";
 import { paginateArray } from "@/utils/paginate";
 
-export const getUsers = async (_: Request, res: Response): Promise<any> => {
+export const getUsers = async (req: Request, res: Response): Promise<any> => {
   try {
-
+    const page = Number(req.query.page);
+    const limit = Number(req.query.limit);
     const users = await User.findAll({
       attributes: {
         exclude: ["password", "refresh_token"],
       },
     });
 
-    return res.json(paginateArray(users));
+    return res.json(paginateArray(users, page, limit));
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch users", error });
   }
@@ -71,21 +72,36 @@ export const updateUser = async (req: Request, res: Response): Promise<any> => {
 
       const { username, password } = req.body;
 
+      if (username) {
+        const existingUser = await User.findOne({ where: { username } });
+
+        if (existingUser) {
+          return res.status(400).json({ message: "Username already exists" });
+        }
+      }
+
       if (password) {
         req.body.password = await bcrypt.hash(password, config.bcrypt.saltRounds);
       }
-      const existingUserName = await User.findOne({
-        where: { username: username },
-      });
 
-      if (existingUserName) {
-        return res.status(400).json({ message: "Username already exists" });
-      }
       await user.update(req.body);
     }
 
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: "Failed to update user", error });
+  }
+};
+
+export const deleteUser = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const user = await User.findByPk(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    await user.destroy();
+    return res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete user", error });
   }
 };
