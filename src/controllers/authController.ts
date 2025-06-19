@@ -2,14 +2,14 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { User } from "@/models/User/User";
-import { JWT_SECRET, JWT_REFRESH_SECRET } from '@/config';
+import { config } from '@/config';
 
 const generateAccessToken = (payload: object) => {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: "15m" });
+  return jwt.sign(payload, config.jwt.secret, { expiresIn: "15m" });
 };
 
 const generateRefreshToken = (payload: object) => {
-  return jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: "7d" });
+  return jwt.sign(payload, config.jwt.refreshSecret, { expiresIn: '7d' });
 };
 
 export const login = async (req: Request, res: Response): Promise<any> => {
@@ -25,12 +25,12 @@ export const login = async (req: Request, res: Response): Promise<any> => {
     if (!isMatch) return res.status(401).json({ message: "Invalid password" });
 
     const payload = { id: dataValues.id, role: dataValues.role };
-    const accessToken = generateAccessToken(payload);
-    const refreshToken = generateRefreshToken(payload);
+    const access_token = generateAccessToken(payload);
+    const refresh_token = generateRefreshToken(payload);
 
-    await user.update({ refresh_token: refreshToken });
+    await user.update({ refresh_token: refresh_token });
 
-    return res.json({ accessToken, refreshToken, user: { id: dataValues.id, username: dataValues.username, role: dataValues.role } });
+    return res.json({ access_token, refresh_token, user: { id: dataValues.id, username: dataValues.username, role: dataValues.role } });
 
   } catch (err) {
     return res.status(500).json({ message: "Login failed", error: err });
@@ -42,7 +42,7 @@ export const refreshToken = async (req: Request, res: Response): Promise<any> =>
   if (!refreshToken) return res.status(401).json({ message: "Refresh token missing" });
 
   try {
-    const payload = jwt.verify(refreshToken, JWT_REFRESH_SECRET) as any;
+    const payload = jwt.verify(refreshToken, config.jwt.refreshSecret) as any;
 
     const user = await User.findByPk(payload.id);
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -64,7 +64,7 @@ export const logout = async (req: Request, res: Response) => {
   const { refreshToken } = req.body;
 
   try {
-    const payload = jwt.verify(refreshToken, JWT_REFRESH_SECRET) as any;
+    const payload = jwt.verify(refreshToken, config.jwt.refreshSecret) as any;
     const user = await User.findByPk(payload.id);
     if (user) {
       await user.update({ refresh_token: null });

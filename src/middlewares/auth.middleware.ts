@@ -1,4 +1,4 @@
-import { JWT_SECRET } from '@/config';
+import { config } from '@/config';
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
@@ -27,7 +27,7 @@ export const authMiddleware = (
     const token = authHeader.split(' ')[1];
 
     // Verify token
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, config.jwt.secret);
 
     // Add user info to request
     req.user = decoded;

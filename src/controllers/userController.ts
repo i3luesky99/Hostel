@@ -1,12 +1,19 @@
 import { User } from "@/models/User/User";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import { BCRYPT_SALT_ROUNDS } from "@/config";
+import { config } from "@/config";
+import { paginateArray } from "@/utils/paginate";
 
-export const getUsers = async (_: Request, res: Response) => {
+export const getUsers = async (_: Request, res: Response): Promise<any> => {
   try {
-    const users = await User.findAll();
-    res.json(users);
+
+    const users = await User.findAll({
+      attributes: {
+        exclude: ["password", "refresh_token"],
+      },
+    });
+
+    return res.json(paginateArray(users));
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch users", error });
   }
@@ -25,7 +32,7 @@ export const createUser = async (req: Request, res: Response): Promise<any> => {
       return res.status(400).json({ message: "Username already exists" });
     }
 
-    const hashPassword = await bcrypt.hash(req.body.password, BCRYPT_SALT_ROUNDS);
+    const hashPassword = await bcrypt.hash(req.body.password, config.bcrypt.saltRounds);
 
     const user = await User.create({
       username,
@@ -65,7 +72,7 @@ export const updateUser = async (req: Request, res: Response): Promise<any> => {
       const { username, password } = req.body;
 
       if (password) {
-        req.body.password = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
+        req.body.password = await bcrypt.hash(password, config.bcrypt.saltRounds);
       }
       const existingUserName = await User.findOne({
         where: { username: username },
