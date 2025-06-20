@@ -1,11 +1,11 @@
 import { USER_ROLES } from "@/models/User/User";
 import { QueryInterface } from "sequelize";
 import bcrypt from "bcryptjs";
-import { BCRYPT_SALT_ROUNDS } from "@/config";
+import { config } from "@/config";
 
 export async function up(queryInterface: QueryInterface): Promise<void> {
-  const adminPassword = await bcrypt.hash("admin123", BCRYPT_SALT_ROUNDS);
-  const userPassword = await bcrypt.hash("user123", BCRYPT_SALT_ROUNDS);
+  const adminPassword = await bcrypt.hash("admin123", config.bcrypt.saltRounds);
+  const userPassword = await bcrypt.hash("user123", config.bcrypt.saltRounds);
 
   await queryInterface.bulkInsert(
     "users",

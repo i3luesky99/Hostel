@@ -1,4 +1,3 @@
-// controllers/houseBlockController.ts
 import { Request, Response } from "express";
 import { HouseBlock } from "@/models/HouseBlock/HouseBlock";
 
